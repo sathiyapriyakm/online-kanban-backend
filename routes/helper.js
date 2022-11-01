@@ -1,6 +1,7 @@
 
 import { client } from "../index.js";
 import { ObjectId } from "mongodb";
+import moment from "moment";
 
 
 export async function getUserByName(Email) {
@@ -34,83 +35,105 @@ export async function createNewTask(data) {
   //db.users.findOne({username: username });
   return await client.db("online-kanban-app").collection("task").insertOne(data);
 }
-export async function createNewWebinar(data) {
-  //db.users.findOne({username: username });
-  return await client.db("online-kanban-app").collection("event_webinar").insertOne(data);
+export async function getAdminOpenTasks() {
+  return await client.db("online-kanban-app").collection("task").find({taskStatus: {$ne: "Closed"}}).toArray();
 }
-
-export async function getAllWebinar() {
-  return await client.db("online-kanban-app").collection("event_webinar").find({}).toArray();
-}
-export async function getAllEvents() {
+export async function getAdminAllTasks() {
   return await client.db("online-kanban-app").collection("task").find({}).toArray();
 }
+export async function getUserOpenTasks(email) {
+  return await client.db("online-kanban-app").collection("task").find({
+    $and: [{
+      assigneeEmail: email
+    },
+      {taskStatus: {$ne: "Closed"}}  
+    ]
+  }).toArray();
+}
+export async function getUserAllTasks(email) {
+  return await client.db("online-kanban-app").collection("task").find({assigneeEmail: email}).toArray();
+}
+export async function getAdminClosedTasks() {
+  return await client.db("online-kanban-app").collection("task").find({taskStatus: "Closed"}).toArray();
+}
+export async function getAdminTasksWithStatus(status) {
+  return await client.db("online-kanban-app").collection("task").find({taskStatus: status}).toArray();
+}
 
+export async function getAdminTasksWithNearCompletion() {
+  let date=moment().add(5, 'days').toDate().toISOString();
+  let toda=moment().toDate().toISOString();
+  return await client.db("online-kanban-app").collection("task").find({
+    $and: [
+      {taskStatus: {$ne: "Closed"}},
+      {
+        taskEndDate: {$gte:toda,$lt:date}
+      }
+    ]
+  }).toArray();
+}
+
+
+export async function getAdminTasksWithBlocks() {
+  return await client.db("online-kanban-app").collection("task").find({
+    $and: [
+      {taskStatus: {$ne: "Closed"}},
+      {
+        blockingPoint: {"$ne": ""}
+      }
+    ]
+  }).toArray();
+}
+
+
+export async function getUserClosedTasks(email) {
+  return await client.db("online-kanban-app").collection("task").find({
+    $and: [{
+      assigneeEmail: email
+    },
+      {taskStatus:"Closed"} 
+    ]
+  }).toArray();
+}
+
+export async function getUserTasksWithBlocks(email) {
+  return await client.db("online-kanban-app").collection("task").find({
+    $and: [
+      {
+        assigneeEmail: email
+      },
+      {taskStatus: {$ne: "Closed"}},
+      {
+        blockingPoint: {"$ne": ""}
+      }
+    ]
+  }).toArray();
+}
+
+
+export async function getUserTasksWithNearCompletion(email) {
+  let date=moment().add(5, 'days').toDate().toISOString();
+  let toda=moment().toDate().toISOString();
+  return await client.db("online-kanban-app").collection("task").find({
+    $and: [
+      {
+        assigneeEmail: email
+      },
+      {taskStatus: {$ne: "Closed"}},
+      {
+        taskEndDate: {$gte:toda,$lt:date}
+      }
+    ]
+  }).toArray();
+}
 export async function getTaskById(id) {
   return await client.db("online-kanban-app").collection("task").findOne({ _id: ObjectId(id) });
 }
 
-export async function updateEventById(id, data) {
+export async function updateTaskById(id, data) {
   return await client.db("online-kanban-app").collection("task").updateOne({ _id: ObjectId(id) }, { $set: data });
 }
 
-export async function deleteEventById(id) {
+export async function deleteTaskById(id) {
   return await client.db("online-kanban-app").collection("task").deleteOne({ _id: ObjectId(id) });
 }
-export async function deleteWebinarById(id) {
-  return await client.db("online-kanban-app").collection("event_webinar").deleteOne({ _id: ObjectId(id) });
-}
-export async function updateEventRegistrationById(id, participantlist) {
-  return await client.db("online-kanban-app").collection("task").updateOne({ _id: ObjectId(id) }, { $set:{participantlist:participantlist}  });
-}
-export async function getWebinarById(id) {
-  return await client.db("online-kanban-app").collection("event_webinar").findOne({ _id: ObjectId(id) });
-}
-export async function updateWebinarById(id, data) {
-  return await client.db("online-kanban-app").collection("event_webinar").updateOne({ _id: ObjectId(id) }, { $set: data });
-}
-export async function updateWebinarRegistrationById(id, participantlist) {
-  return await client.db("online-kanban-app").collection("event_webinar").updateOne({ _id: ObjectId(id) }, { $set:{participantlist:participantlist}  });
-}
-
-export async function getAllNotRegisteredWebinar(email) {
-  
-const isodate = new Date().toISOString()
-  // console.log(currDate,time)
-  return await client.db("online-kanban-app").collection("event_webinar")
-  .find(
-    { "$and" : 
-  [
-    {participantlist:{$ne:email}} ,
-     {eventDate : {$gte:isodate}}
-  ]
-}
-).toArray();
-}
-
-export async function getAllRegisteredWebinar(email) {
-  
-  const isodate = new Date().toISOString()
-    // console.log(currDate,time)
-    return await client.db("online-kanban-app").collection("event_webinar")
-    .find(
-      { "$and" : 
-    [
-      {participantlist:{$eq:email}} ,
-       {eventDate : {$gte:isodate}}
-    ]
-  }
-  ).toArray();
-  }
-
-  export async function cancelRegistrationOfEvent(eventid,email) {
-    return await client.db("online-kanban-app").collection("event_webinar").update(
-      { _id: ObjectId(eventid)},
-      { $pull: { participantlist: email} }
-  );
-  }
-
-
-
-
-

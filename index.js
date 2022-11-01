@@ -6,7 +6,7 @@ import cors from "cors";
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import {adminRouter} from "./routes/admin.js";
-import {studentRouter} from "./routes/student.js"
+import {userRouter} from "./routes/user.js";
 import randomstring from "randomstring";
 import {
   createUser,
@@ -44,7 +44,7 @@ export async function generateHashedPassword(password) {
 
 
 app.use("/admin",adminRouter);
-app.use("/student",studentRouter);
+app.use("/user",userRouter);
 
 
 app.get("/", function (req, res) {
