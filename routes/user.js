@@ -95,6 +95,7 @@ const data = {
 const data = {
       blockingPoint:blockingPoint,
       obstacle:newObstacles,
+      solution:"",
     }
     const result = await updateTaskById(id, data);
     response.send(result);
