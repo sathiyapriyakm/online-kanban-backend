@@ -1,5 +1,6 @@
 # [E- kanban-app](https://thriving-bombolone-79caff.netlify.app/) - MERN Stack Website
   [Front End](https://github.com/sathiyapriyakm/online-kanban-frontend)
+  
   [Back End](https://github.com/sathiyapriyakm/online-kanban-backend)
 
 
@@ -10,7 +11,7 @@ E Kanban app is a web application used for achieving sychronisation in task stat
 
 ### `Short tech summary`
   - Implemented authentication,authorization using Json Web Token for login,along with all CRUD features.
-  -React is Used for Front end and nodeJS as Back end along with MongoDB as database  
+  - React is Used for Front end and nodeJS as Back end along with MongoDB as database  
 
 
 ## Features
